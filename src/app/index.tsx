@@ -1,9 +1,5 @@
-import { Text, View } from "react-native";
+import Routes from "./routes";
 
-export default function Index() {
-  return (
-    <View>
-      <Text>Hello World!</Text>
-    </View>
-  );
+export default function App() {
+  return <Routes />;
 }

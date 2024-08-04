@@ -1,26 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import { EnterProductInput } from "./components/enter-product-input";
 import { Product } from "./components/product";
 import { styles } from "./styles";
 import { ProductsList } from "./types/product-list";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getStorage } from "@/src/app/utils/get-storage";
+
 export function ProductList() {
   const [fieldText, setFieldText] = useState<string>("");
   const [products, setProducts] = useState<ProductsList[]>([]);
+  const [refetch, setRefetch] = useState(false);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      const result = await getStorage("products_list");
+      setProducts(result);
+    };
+
+    loadProducts();
+  }, [refetch]);
+
+  const submitProduct = async () => {
+    const productsList: ProductsList[] = await getStorage("products_list");
+
+    productsList.push({ id: Date.now(), title: fieldText });
+
+    await AsyncStorage.setItem("products_list", JSON.stringify(productsList));
+
+    setRefetch(!refetch);
+
+    setFieldText("");
+  };
 
   const handleChangeInput = (value: string) => {
     setFieldText(value);
-  };
-
-  const submitProduct = () => {
-    setProducts([...products, { id: Date.now(), title: fieldText }]);
-
-    clearSetFieldText();
-  };
-
-  const clearSetFieldText = () => {
-    setFieldText("");
   };
 
   const disableSubmitButton = fieldText.length === 0;

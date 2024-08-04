@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.COLOR.lightRed,
-    marginBottom: 5,
+    marginBottom: 20,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",

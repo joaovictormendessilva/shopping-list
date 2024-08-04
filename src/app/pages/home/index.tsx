@@ -1,13 +1,12 @@
-import { ScrollView, StyleSheet } from "react-native";
-import { theme } from "../../../theme";
+import { ScrollView, Text } from "react-native";
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: theme.COLOR.darkBlue,
-    flex: 1,
-  },
-});
+import { PageHeader } from "../../components/page-title";
+import { styles } from "./styles";
 
 export default function Index() {
-  return <ScrollView style={styles.container}></ScrollView>;
+  return (
+    <ScrollView style={styles.container}>
+      <PageHeader title="Home" />
+    </ScrollView>
+  );
 }

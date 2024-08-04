@@ -19,4 +19,8 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     color: theme.COLOR.white,
   },
+
+  doneTitle: {
+    textDecorationLine: "underline line-through",
+  },
 });

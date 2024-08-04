@@ -13,29 +13,65 @@ export function ProductList() {
   const [products, setProducts] = useState<ProductsList[]>([]);
   const [refetch, setRefetch] = useState(false);
 
+  const key = "products_list";
+
   useEffect(() => {
     const loadProducts = async () => {
-      const result = await getStorage("products_list");
+      const result = await getStorage(key);
       setProducts(result);
     };
 
     loadProducts();
   }, [refetch]);
 
+  const handleChangeInput = (value: string) => {
+    setFieldText(value);
+  };
+
   const submitProduct = async () => {
-    const productsList: ProductsList[] = await getStorage("products_list");
+    const productsList: ProductsList[] = await getStorage(key);
 
-    productsList.push({ id: Date.now(), title: fieldText });
+    productsList.push({ id: Date.now(), title: fieldText, done: false });
 
-    await AsyncStorage.setItem("products_list", JSON.stringify(productsList));
+    await AsyncStorage.setItem(key, JSON.stringify(productsList));
 
     setRefetch(!refetch);
 
     setFieldText("");
   };
 
-  const handleChangeInput = (value: string) => {
-    setFieldText(value);
+  const removeItem = async (id: number) => {
+    const productsList: ProductsList[] = await getStorage(key);
+    const newProductsList = productsList.filter((product) => {
+      return product.id !== id;
+    });
+    await AsyncStorage.setItem(key, JSON.stringify(newProductsList));
+    setRefetch(!refetch);
+  };
+
+  const markAsDone = async (id: number) => {
+    const productsList: ProductsList[] = await getStorage(key);
+
+    const newProductsList = productsList.map((product) => {
+      if (product.id === id) {
+        return { ...product, done: !product.done };
+      }
+      return product;
+    });
+
+    await AsyncStorage.setItem(key, JSON.stringify(newProductsList));
+    setRefetch(!refetch);
+  };
+
+  const handleAction = (action: "Done" | "Delete", id: number) => {
+    switch (action) {
+      case "Done": {
+        return markAsDone(id);
+      }
+      default: {
+        removeItem(id);
+      }
+    }
   };
 
   const disableSubmitButton = fieldText.length === 0;
@@ -51,7 +87,15 @@ export function ProductList() {
 
       <FlatList
         data={products}
-        renderItem={({ item }) => <Product id={item.id} title={item.title} />}
+        renderItem={({ item }) => (
+          <Product
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            done={item.done}
+            onHandleAction={handleAction}
+          />
+        )}
         horizontal={false}
       />
     </View>
